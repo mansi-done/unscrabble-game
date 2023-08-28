@@ -59,8 +59,6 @@ function areEqual(arr1: any, arr2: any) {
     return true;
 }
 
-
-
 function PrintString(props: any) {
     const { array, color } = props;
     return (
@@ -75,6 +73,10 @@ function PrintString(props: any) {
     );
 }
 
+function UpdateColor() {
+
+}
+
 
 const GameBoard = () => {
     const [guesses, setGuesses] = useState<any>([]);
@@ -86,6 +88,10 @@ const GameBoard = () => {
     const [currInput, setCurrInput] = useState(0);
     const inputRefs = useRef(Array.from({ length: wordsArr[0].length }, a => React.createRef())) as any;
     const buttonRef = useRef(null);
+
+    useEffect(()=>{
+        console.log(wordsArr);
+    },[])
 
     useEffect(() => {
         function handleEnterKey(event: any) {
@@ -225,7 +231,7 @@ const GameBoard = () => {
     }
 
     const handleGuess = (e: any, index: any) => {
-        var input = e.target.value;
+        var input = e.target.value.toLowerCase();
         var newGuess = currGuess;
         newGuess[index] = input;
         setCurrGuess(newGuess);
@@ -237,7 +243,7 @@ const GameBoard = () => {
         <div className="game-wrapper">
             <>
 
-                <div id="scrambledid"><PrintString array={wordsArr[1]} color={false} /></div>
+                <div id="scrambledid"><PrintString array={currentArray} color={false} /></div>
 
                 {
                     guesses.map((guess: any) => {
