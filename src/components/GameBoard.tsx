@@ -298,15 +298,17 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
                             open={gameOverModal}
                             onOk={() => {
                                 setGameOverModal(false)
-                                setLetters(letters+1)
+                                setLetters(letters + 1)
                             }
                             }
                             okText="Play Again"
                             onCancel={() => setGameOverModal(false)}
                         >
-                            <div style={{ fontSize: "1.5rem" }}>Word: {word}</div>
-                            <div style={{ fontSize: "1.5rem" }}>Guesses: {guesses.length + 1}</div>
-                            {gif && <img src={gif} alt="loading..." />}
+                            <div style={{maxWidth:"90vw"}}>
+                                <div style={{ fontSize: "1.5rem" }}>Word: {word}</div>
+                                <div style={{ fontSize: "1.5rem" }}>Guesses: {guesses.length + 1}</div>
+                                {gif && <img src={gif} width={"100%"} alt="loading..." />}
+                            </div>
                         </Modal>
                     </>
                     )
