@@ -9,4 +9,5 @@ body {
   width: 100vw;
   height: 100vh;
   background-color: rgb(228, 219, 208);
+  overflow-x: hidden;
 }
