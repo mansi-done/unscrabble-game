@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import GameBoard from './components/GameBoard';
 import Settings from './components/Settings';
@@ -9,8 +9,8 @@ function App() {
   return (
     <div className="App">
       <div className="unscrabble"> unscramble</div>
-      {/* <Settings letters={letters} setLetters={setLetters}/> */}
-      <GameBoard letters={letters} />
+      <Settings letters={letters} setLetters={setLetters} />
+      <GameBoard letters={letters} setLetters={setLetters} />
     </div>
   );
 }

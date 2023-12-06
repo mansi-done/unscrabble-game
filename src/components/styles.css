@@ -14,6 +14,7 @@
   font-size: 40px;
   font-family: "Urbanist", sans-serif;
   font-weight: 800;
+  max-width: 90vw;
   /* letter-spacing: 10px; */
 }
 
@@ -47,6 +48,7 @@
   width: 500px;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap:10px;
 }
 
@@ -81,7 +83,7 @@
   font-size: 40px;
 }
 
-button {
+.enterBtn {
   padding: 0.1em 0.25em;
   width: 13em;
   height: 4.2em;
@@ -93,7 +95,7 @@ button {
 
 }
 
-button span {
+.enterBtn span {
   position: relative;
   display: flex;
   justify-content: center;
@@ -110,18 +112,18 @@ button span {
 
 }
 
-button span:active {
+.enterBtn span:active {
   transition: all 0.5s;
   transform: translate(0, 0.4em);
   box-shadow: 0 0 0 0 #fff;
 }
 
-button span:not(hover) {
+.enterBtn span:not(hover) {
   transition: all 1s;
 }
 
 
-button:disabled {
+.enterBtn:disabled {
   background-color: #dddddd;
   color: #aaaaaa;
   cursor: not-allowed;
