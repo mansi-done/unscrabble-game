@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import "./styles.css";
 import { words } from '../data/words';
+import axios from 'axios';
 
 
 function getRandomInt(min: number, max: number) {
@@ -17,13 +18,22 @@ const stringToArr = (str: string) => {
     return arr;
 }
 
-function getRandomWord() {
-    const wordsLength = words.length - 1;
-    const randomNum = getRandomInt(0, wordsLength);
-    const randomWord = words[randomNum];
-    const scrabledWord = scrambleWord(randomWord);
+// function getRandomWord() {
+//     const wordsLength = words.length - 1;
+//     const randomNum = getRandomInt(0, wordsLength);
+//     const randomWord = words[randomNum];
+//     const scrabledWord = scrambleWord(randomWord);
 
-    return [stringToArr(randomWord), stringToArr(scrabledWord)]
+//     return [stringToArr(randomWord), stringToArr(scrabledWord)]
+// }
+
+function getRandomWord(word: string) {
+    // const wordsLength = words.length - 1;
+    // const randomNum = getRandomInt(0, wordsLength);
+    // const randomWord = words[randomNum];
+    const scrambledWord = scrambleWord(word);
+    return [stringToArr(word), stringToArr(scrambledWord)]
+
 }
 
 function scrambleWord(word: string) {
@@ -63,7 +73,7 @@ function PrintString(props: any) {
     const { array, color } = props;
     return (
         <div className="guess">
-            {array.map((element: any, index: any) => {
+            {array?.map((element: any, index: any) => {
                 const correct: boolean = (element != "_" && color);
                 return (
                     <div key={index} style={{ color: correct ? "green" : "black" }}>{element}</div>
@@ -78,29 +88,55 @@ function UpdateColor() {
 }
 
 
-const GameBoard = () => {
+const GameBoard = ({ letters}: { letters: number}) => {
     const [guesses, setGuesses] = useState<any>([]);
-    const [wordsArr, setWordsArr] = useState(getRandomWord())
-    const [currentArray, setCurrArray] = useState(wordsArr[1])
+    const [word, setWord] = useState(null)
+    const [wordsArr, setWordsArr] = useState<any>(null)
+    const [currentArray, setCurrArray] = useState<any>(null)
     const [enterAllowed, setEnterAllowed] = useState(false)
     const [gameRunning, setGameRunning] = useState(true);
-    const [currGuess, setCurrGuess] = useState(new Array(wordsArr[0].length).fill(" "));
+    const [currGuess, setCurrGuess] = useState<any>(null);
     const [currInput, setCurrInput] = useState(0);
-    const inputRefs = useRef(Array.from({ length: wordsArr[0].length }, a => React.createRef())) as any;
+    const inputRefs = useRef(Array.from({ length: letters }, a => React.createRef())) as any;
     const buttonRef = useRef(null);
 
-    useEffect(()=>{
-        console.log(wordsArr);
-    },[])
+    const baseURL = `https://random-word-api.herokuapp.com/word?length=${letters}`;
+
+    useEffect(() => {
+        axios.get(baseURL).then((response) => {
+            console.log(response.data)
+            setWord(response.data);
+            setWordsArr(getRandomWord(response.data[0]))
+            
+            inputRefs.current = Array.from({ length: letters }, a => React.createRef())
+        });
+    }, [letters]);
+
+    useEffect(() => {
+        if (!wordsArr) return;
+        setCurrArray(wordsArr[1])
+        setGuesses([])
+        setCurrInput(0)
+        setCurrGuess(new Array(wordsArr[0].length).fill(" "))
+    }, [wordsArr])
+
+
+
 
     useEffect(() => {
         function handleEnterKey(event: any) {
             if (event.key === 'Enter') {
-                if (!enterAllowed) {
+                event.preventDefault();
+                console.log(currentArray,currGuess,currInput)
+
+
+
+                if (enterAllowed) {
                     // @ts-ignore
                     buttonRef.current.click();
                     // @ts-ignore
                     buttonRef.current.focus();
+                    inputRefs.current[0].current.focus()
 
                 }
                 else {
@@ -108,22 +144,33 @@ const GameBoard = () => {
                 }
 
             }
-            else if (event.keyCode === 37) {
-                const nextInput = inputRefs.current[currInput-1].current;
-                if (nextInput) {
-                    nextInput.focus();
+            else if (event.keyCode == 8 || event.keyCode == 46) {
+                const newCurrInput = currInput - 1;
+                if (newCurrInput > -1) {
+                    const newGuess = [...currGuess]
+                    newGuess[newCurrInput] = " "
+                    setCurrGuess(newGuess)
+                    setCurrInput(newCurrInput)
+                    console.log(newGuess, newCurrInput)
+                    inputRefs?.current[currInput - 1].current.focus()
                 }
-                setCurrInput(currInput-1)
-
             }
-            else if (event.keyCode === 39) {
-                const nextInput = inputRefs.current[currInput+1].current;
-                if (nextInput) {
-                    nextInput.focus();
-                }
-                setCurrInput(currInput+1)
+            // else if (event.keyCode === 37) {
+            //     const nextInput = inputRefs.current[currInput - 1].current;
+            //     if (nextInput) {
+            //         nextInput.focus();
+            //     }
+            //     setCurrInput(currInput - 1)
 
-            }
+            // }
+            // else if (event.keyCode === 39) {
+            //     const nextInput = inputRefs.current[currInput + 1].current;
+            //     if (nextInput) {
+            //         nextInput.focus();
+            //     }
+            //     setCurrInput(currInput + 1)
+
+            // }
         }
 
         // Attach the event handler to the document
@@ -132,7 +179,7 @@ const GameBoard = () => {
         return () => {
             document.removeEventListener('keydown', handleEnterKey);
         };
-    }, []);
+    }, [currInput, currGuess]);
 
     useEffect(() => {
         console.log(enterAllowed)
@@ -225,7 +272,10 @@ const GameBoard = () => {
             const newGuesses = [...guesses];
             newGuesses.push(ans);
             setGuesses(newGuesses)
+            console.log(inputRefs.current[0].current)
             clearInputs();
+            inputRefs.current[0].current.focus()
+
         }
         setEnterAllowed(false);
     }
@@ -240,11 +290,12 @@ const GameBoard = () => {
 
 
     return (
+
         <div className="game-wrapper">
+            {/* {
+                wordsArr ? <> */}
             <>
-
-                <div id="scrambledid"><PrintString array={currentArray} color={false} /></div>
-
+                {wordsArr ? <div id="scrambledid"><PrintString array={currentArray} color={false} /></div> : <div>Loading...</div>}
                 {
                     guesses.map((guess: any) => {
                         return (
@@ -259,7 +310,7 @@ const GameBoard = () => {
                             {
                                 inputRefs.current.map((ref: any, index: any) => {
                                     return (<div className="guess-input">
-                                        <input className="inputstyles" ref={ref} autoFocus id="inputid" maxLength={1} placeholder={"_"} onChange={(e: any) => handleGuess(e, index)}></input>
+                                        <input className="inputstyles" ref={ref} id="inputid" maxLength={1} placeholder={"_"} onChange={(e: any) => handleGuess(e, index)}></input>
                                     </div>)
                                 })
                             }
@@ -270,9 +321,7 @@ const GameBoard = () => {
                         <PrintString array={wordsArr[0]} color={false} />
                     )
                 }
-
             </>
-
 
             <br />
             <br />
@@ -283,6 +332,10 @@ const GameBoard = () => {
                     Enter
                 </span>
             </button>
+            {/* </>
+                    :
+                    <div>Loading</div>
+            } */}
         </div>
     )
 }

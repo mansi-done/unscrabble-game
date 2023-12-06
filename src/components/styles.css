@@ -42,6 +42,14 @@
   /* border: 1px solid red; */
 
 }
+
+.setting-input {
+  width: 500px;
+  display: flex;
+  justify-content: center;
+  gap:10px;
+}
+
 .scrambled {
   color: rgb(54, 54, 54);
 }
@@ -61,6 +69,14 @@
   /* letter-spacing: 10px; */
 }
 
+.letterInput {
+  background-color: transparent;
+  font-family: "Urbanist", sans-serif;
+  font-weight: 800;
+  width: 50px;
+  text-align: center;
+}
+
 .string-letter {
   font-size: 40px;
 }
@@ -69,7 +85,7 @@ button {
   padding: 0.1em 0.25em;
   width: 13em;
   height: 4.2em;
-  background-color:rgb(178, 124, 230);
+  background-color: rgb(178, 124, 230);
   border: 0.08em solid #fff;
   border-radius: 0.3em;
   font-size: 12px;
