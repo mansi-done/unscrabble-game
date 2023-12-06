@@ -236,6 +236,7 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
         newGuess[index] = input;
         setCurrGuess(newGuess);
         if (input) {
+            inputRefs.current[index].current.value = input;
             setCurrInput(index + 1)
             const nextIndex = index + 1;
             if (nextIndex < letters) {
