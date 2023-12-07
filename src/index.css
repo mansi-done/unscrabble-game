@@ -2,6 +2,7 @@
 
 body {
   margin: 0;
+  padding: 0;
   /* font-family: 'Urbanist', sans-serif; */
   font-family: 'Bricolage Grotesque', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -10,4 +11,9 @@ body {
   height: 100vh;
   background-color: rgb(228, 219, 208);
   overflow-x: hidden;
+}
+
+.container{
+  width: 100vw;
+  height:100vh;
 }

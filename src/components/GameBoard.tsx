@@ -120,6 +120,7 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
     };
 
     useEffect(() => {
+        setWordsArr(null)
         axios.get(baseURL).then((response) => {
             setWord(response.data[0])
             setWordsArr(getRandomWord(response.data[0]))
@@ -261,7 +262,7 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
                 {
                     gameRunning ? (
                         <>
-                            {wordsArr ? <div id="scrambledid"><PrintString array={currentArray} color={false} /></div> : <div style={{ fontSize: "1rem" }}>Loading...</div>}
+                            {wordsArr ? <div id="scrambledid"><PrintString array={currentArray} color={false} /></div> : <div style={{ fontSize: "1rem" }}><div className="dot-falling"></div></div>}
 
                             {guesses.map((guess: any) => {
                                 return (
@@ -305,7 +306,7 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
                             okText="Play Again"
                             onCancel={() => setGameOverModal(false)}
                         >
-                            <div style={{maxWidth:"90vw"}}>
+                            <div style={{width:"80vw"}}>
                                 <div style={{ fontSize: "1.5rem" }}>Word: {word}</div>
                                 <div style={{ fontSize: "1.5rem" }}>Guesses: {guesses.length + 1}</div>
                                 {gif && <img src={gif} width={"100%"} alt="loading..." />}
