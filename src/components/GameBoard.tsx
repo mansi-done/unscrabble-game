@@ -100,10 +100,13 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
     const buttonRef = useRef(null);
     const [messageApi, contextHolder] = message.useMessage();
     const [gameOverModal, setGameOverModal] = useState<boolean>(false);
-    const [gif, setGif] = useState<string | null>(null)
+    const [meaning, setMeaning] = useState(null)
+    // const [gif, setGif] = useState<string | null>(null)
+
 
 
     const baseURL = `https://random-word-api.herokuapp.com/word?length=${letters}`;
+    const baseURLDictionary = 'https://api.dictionaryapi.dev/api/v2/entries/en/'
 
     const error = (message: string) => {
         messageApi.open({
@@ -127,12 +130,30 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
         });
     }, [letters]);
 
+    // useEffect(() => {
+    //     axios.get("https://g.tenor.com/v1/search?q=dancing&key=LIVDSRZULELA&limit=50").then((response) => {
+    //         const random = Math.floor(Math.random() * (19))
+    //         setGif(response.data.results[random].media[0].gif.url)
+    //     });
+    // }, [letters])
+
     useEffect(() => {
-        axios.get("https://g.tenor.com/v1/search?q=dancing&key=LIVDSRZULELA&limit=20").then((response) => {
-            const random = Math.floor(Math.random() * (19))
-            setGif(response.data.results[random].media[0].gif.url)
-        });
-    }, [letters])
+        if (!word) return;
+        try {
+            axios.get(baseURLDictionary + word).then((response) => {
+                if (response.status == 200) {
+                    setMeaning(response.data[0].meanings[0].definitions[0].definition);
+                } else if (response.status === 404) {
+                    console.log('Word not found');
+                }
+            }).catch(error => {
+                console.log(error.response.data.error)
+            })
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }, [word])
 
 
     useEffect(() => {
@@ -155,9 +176,9 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
                 event.preventDefault();
                 if (enterAllowed) {
                     // @ts-ignore
-                    buttonRef.current.click();
+                    buttonRef?.current?.click();
                     // @ts-ignore
-                    buttonRef.current.focus();
+                    buttonRef?.current?.focus();
                     inputRefs.current[0].current.focus()
 
                 }
@@ -217,7 +238,6 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
     const handleOnEnter = () => {
         const ans = onGuess(currGuess, wordsArr[0]);
         if (ans[0] == "CORRECT") {
-            // alert("You win");
             setGameOverModal(true)
             setGameRunning(false)
         }
@@ -292,10 +312,8 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
                     ) : (<>
 
                         <div style={{ fontSize: "1.5rem" }}>Please Select number of letters above :)</div>
-
-
                         <Modal
-                            title="YOU WON KKHHKKHHSSHSHSHSHSH"
+                            // title="YOU WON KKHHKKHHSSHSHSHSHSH"
                             centered
                             open={gameOverModal}
                             onOk={() => {
@@ -305,11 +323,12 @@ const GameBoard = ({ letters, setLetters }: { letters: number, setLetters: React
                             }
                             okText="Play Again"
                             onCancel={() => setGameOverModal(false)}
+                            okButtonProps={{ style: { background: '#b27ce6', } }}
                         >
-                            <div style={{width:"80vw"}}>
+                            <div style={{ fontFamily: "Bricolage Grotesque", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "#b27ce6", minHeight: "40vh" }}>
+                                <div style={{ fontSize: "1.5rem" }}>Total Guesses: {guesses.length + 1}</div>
                                 <div style={{ fontSize: "1.5rem" }}>Word: {word}</div>
-                                <div style={{ fontSize: "1.5rem" }}>Guesses: {guesses.length + 1}</div>
-                                {gif && <img src={gif} width={"100%"} alt="loading..." />}
+                                {meaning && <div style={{ fontSize: "1.1rem" }}>Meaning: {meaning}</div>}
                             </div>
                         </Modal>
                     </>
